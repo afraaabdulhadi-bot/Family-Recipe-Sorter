@@ -2,3 +2,4 @@ streamlit
 openai
 inference-sdk
 pillow
+opencv-python-headless
