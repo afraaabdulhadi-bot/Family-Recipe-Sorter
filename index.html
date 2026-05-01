@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UAE AI Recipes</title>
+</head>
+
+<body style="text-align:center; font-family:Arial;">
+
+<h1>🇦🇪 AI Recipe Detector</h1>
+
+<video id="camera" width="300" autoplay></video>
+
+<br><br>
+
+<img id="image" src="/static/stuffed_dates.jpg" width="250">
+
+<h2 id="ar">تمر محشي</h2>
+<p id="en">Stuffed dates</p>
+
+<p id="info" style="width:300px;margin:auto;"></p>
+
+<br>
+
+<button onclick="detect()">Detect 📷</button>
+<button onclick="nextRecipe()">Next ➡️</button>
+<button onclick="getInfo()">More Info 🇦🇪</button>
+
+<script>
+const video = document.getElementById("camera");
+let currentDish = "dates";
+let isLoading = false;
+
+// تشغيل الكاميرا
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+    video.srcObject = stream;
+});
+
+// Detect (محسّن)
+function detect() {
+    if (isLoading) return;
+    isLoading = true;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 320;
+    canvas.height = 240;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, 320, 240);
+
+    const imageData = canvas.toDataURL("image/jpeg");
+
+    fetch('/detect', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageData })
+    })
+    .then(res => res.json())
+    .then(data => {
+        updateUI(data);
+        setTimeout(() => { isLoading = false; }, 1000);
+    });
+}
+
+// Next
+function nextRecipe() {
+    fetch('/next')
+    .then(res => res.json())
+    .then(updateUI);
+}
+
+// ChatGPT info
+function getInfo() {
+    fetch('/info/' + currentDish)
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("info").innerText = data.text;
+    });
+}
+
+// تحديث
+function updateUI(data) {
+    document.getElementById("ar").innerText = data.ar;
+    document.getElementById("en").innerText = data.en;
+    document.getElementById("image").src = "/static/" + data.img;
+    currentDish = data.en;
+}
+</script>
+
+</body>
+</html>
