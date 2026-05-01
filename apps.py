@@ -1,5 +1,4 @@
 import streamlit as st
-from inference_sdk import InferenceHTTPClient
 from openai import OpenAI
 import os
 
@@ -7,9 +6,6 @@ import os
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 ROBOFLOW_KEY = os.getenv("ROBOFLOW_API_KEY")
 
-CLIENT = InferenceHTTPClient(
-    api_url="https://detect.roboflow.com",
-    api_key=ROBOFLOW_KEY
 )
 
 ai_client = OpenAI(api_key=OPENAI_KEY)
@@ -58,9 +54,10 @@ img = st.camera_input("Take a picture")
 if img is not None:
     with open("frame.jpg", "wb") as f:
         f.write(img.getbuffer())
-
-    try:
-        result = CLIENT.infer("frame.jpg", model_id="smart-family-recipe-sorter/1")
+        try:
+            label = "dates"
+st.session_state.current_label = label
+st.session_state.current_index = 0
 
         if result["predictions"]:
             label = result["predictions"][0]["class"]
