@@ -1,4 +1,0 @@
-flask
-inference-sdk
-openai
-gunicorn
