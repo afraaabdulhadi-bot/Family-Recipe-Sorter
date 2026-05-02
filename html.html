@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Recipe App</title>
+</head>
+<body>
+
+<h1>🍽️ AI Recipe App</h1>
+
+<button onclick="nextRecipe()">Next Recipe</button>
+<button onclick="getInfo()">🤖 Get AI Info</button>
+
+<h2 id="title"></h2>
+<p id="result"></p>
+
+<script>
+function nextRecipe() {
+    fetch("/next")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("title").innerText = data.en;
+        document.getElementById("result").innerText = "";
+    });
+}
+
+function getInfo() {
+    document.getElementById("result").innerText = "Loading...";
+
+    fetch("/info")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("result").innerText = data.text;
+    })
+    .catch(error => {
+        document.getElementById("result").innerText = "Error loading AI";
+    });
+}
+</script>
+
+</body>
+</html>
